@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class CarsService {
@@ -20,6 +20,7 @@ export class CarsService {
             id: 3,
             brand: 'Audi',
             model: 'A4',
+            year: 2022
         }
     ];
 
@@ -28,7 +29,34 @@ export class CarsService {
     }
 
     findById(id: number) {
-        return this.cars[id];
+        const car = this.cars.find( car => car.id === id );
+
+        if ( !car ) throw new NotFoundException(`Car with id ${id} not found`);
+
+        return car;
+    }
+
+    addCar( car: any ) {
+        car.id = this.cars.length + 1;
+        this.cars.push( car );
+        return car;
+    }
+
+    updateCar( id: number, updatedCar: any ) {
+        const index = this.cars.findIndex( car => car.id === id );
+
+        if ( index === -1 ) throw new NotFoundException(`Car with id ${id} not found`);
+
+        this.cars[ index ] = updatedCar;
+        return updatedCar;
+    }
+
+    deleteCar( id: number ) {
+        const index = this.cars.findIndex( car => car.id === id );
+
+        if ( index === -1 ) throw new NotFoundException(`Car with id ${id} not found`);
+
+        this.cars.splice( index, 1 );
     }
 
 }
